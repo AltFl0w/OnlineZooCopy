@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  minecraft-bedrock:
+    image: itzg/minecraft-bedrock-server:latest
+    container_name: minecraft-bedrock-zoo
+    restart: unless-stopped
+    
+    ports:
+      - "19133:19133/udp"
+    
+    environment:
+      # Accept EULA
+      EULA: "TRUE"
+      
+      # Server Configuration
+      SERVER_NAME: "MC Animals Zoo - SmithyMC"
+      SERVER_PORT: "19133"
+      GAMEMODE: "creative"
+      DIFFICULTY: "easy"
+      ALLOW_CHEATS: "true"
+      MAX_PLAYERS: "10"
+      ONLINE_MODE: "false"
+      WHITE_LIST: "false"
+      
+      # World Configuration
+      LEVEL_NAME: "world"
+      LEVEL_SEED: ""
+      
+      # Performance Settings
+      SERVER_AUTHORITATIVE_MOVEMENT: "server-auth"
+      PLAYER_IDLE_TIMEOUT: "30"
+      MAX_THREADS: "8"
+      
+      # Network Settings
+      SERVER_PORTV6: "19133"
+      
+      # Logging
+      LOG_LEVEL: "INFO"
+      
+    volumes:
+      # Mount persistent data directory
+      - bedrock_data:/bedrock
+      # Mount logs directory
+      - ./logs:/bedrock/logs
+    
+    healthcheck:
+      test: ["CMD", "mc-monitor", "status", "bedrock", "--host", "localhost", "--port", "19133"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  bedrock_data:
+    driver: local 
